@@ -6,16 +6,18 @@
 	</head>
 	<body>
 		<h1>Teste</h1>
-		<canvas id="tela" width="600" height="300"></canvas>
+		<canvas id="tela" width="640" height="320"></canvas>
 		<script>
 			var tela = document.getElementById('tela');
 			var ctx = tela.getContext('2d');
 			var imgPc = new Image();
+			imgPc.src = 'pc.svg';
+			var imgWall = new Image();
+			imgWall.src = 'wall.svg';
 			var x = 0;
 			var fps = 30;
 			var dt = 1.0/fps;
 			var g = 300;
-			imgPc.src = 'pc.svg';
 			var pc = {
 				x: 0,
 				y: 0,
@@ -57,9 +59,20 @@
 
 				pc.move(dt);
 
-				ctx.clearRect(0,0,tela.width,tela.height);
+				//ctx.clearRect(0,0,tela.width,tela.height);
+				desenhaMapa();
 				ctx.fillText(x++,50,20);
 				pc.desenha(ctx);
+			}
+
+			function desenhaMapa(){
+				var linhas = tela.height/32;
+				var colunas = tela.width/32;
+				for (var l = 0; l < linhas; l++) {
+					for (var c = 0; c < colunas; c++) {
+						ctx.drawImage(imgWall,c*32,l*32);
+					}
+				}
 			}
 
 			addEventListener('keydown', function(e){
