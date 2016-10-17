@@ -14,29 +14,53 @@
 			imgPc.src = 'pc.svg';
 			var imgWall = new Image();
 			imgWall.src = 'wall.svg';
+			var imgBlock = new Image();
+			imgBlock.src = 'block.svg';
 			var x = 0;
 			var fps = 30;
 			var dt = 1.0/fps;
 			var g = 300;
+			var mapa = [
+				[1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,0,0,0, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 0,0,1,1,1, 0,0,0,0,0, 0,0,0,0,1],
+				[1,0,0,0,0, 1,1,1,1,1, 0,0,0,0,0, 0,0,0,0,1],
+				[1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1, 1,1,1,1,1]
+			];
 			var pc = {
-				x: 0,
-				y: 0,
+				x: 32*3,
+				y: 32*2,
 				vx: 0,
 				vy: 0,
 				ax: 0,
 				ay: 0,
+				mx: 3,
+				my: 2,
 				desenha: function(ctx){
 					if(this.vx>=0){
-						ctx.drawImage(imgPc,0,0,32,32,this.x-16,this.y,32,32);
+						ctx.drawImage(imgPc,0,0,32,32,this.x-16,this.y-32,32,32);
 
 					}else{
 						ctx.save();
 						ctx.translate(this.x,this.y);
 						ctx.scale(-1,1);
-						ctx.drawImage(imgPc,0,0,32,32,-16,0,32,32);
+						ctx.drawImage(imgPc,0,0,32,32,-16,-32,32,32);
 						ctx.restore();
-
 					}
+					ctx.strokeStyle = "red";
+					ctx.beginPath();
+					ctx.moveTo(this.x-5,this.y-5);
+					ctx.lineTo(this.x+5,this.y+5);
+					ctx.lineTo(this.x+5,this.y-5);
+					ctx.lineTo(this.x-5,this.y+5);
+					ctx.closePath();
+					ctx.stroke();
+					ctx.strokeRect(this.mx*32, this.my*32,32,32);
 				},
 				move: function(dt){
 					this.x = this.x + this.vx*dt;
@@ -45,10 +69,12 @@
 					this.vx = this.vx + this.ax*dt;
 					this.vy = this.vy + this.ay*dt + g*dt;
 
-					if(this.y > 100){
-						this.y = 100;
+					if(mapa[this.my+1][this.mx] == 1 && this.vy>0){
+						this.y = (this.my+1)*32-1;
 						this.vy = 0;
 					}
+					this.mx = Math.floor(this.x/32);
+					this.my = Math.floor(this.y/32);
 				}
 			}
 
@@ -70,7 +96,11 @@
 				var colunas = tela.width/32;
 				for (var l = 0; l < linhas; l++) {
 					for (var c = 0; c < colunas; c++) {
-						ctx.drawImage(imgWall,c*32,l*32);
+						if(mapa[l][c]==0){
+							ctx.drawImage(imgWall,c*32,l*32);
+						} else {
+							ctx.drawImage(imgBlock,c*32,l*32);
+						}
 					}
 				}
 			}
